@@ -4,7 +4,7 @@ function [yi,store]=calcActivations(in,W,b,layertypes,varargin)
         store = [];
         
         if ~isempty(varargin)
-            startLayer = varargin{1}
+            startLayer = varargin{1};
         else
             startLayer = 1;
         end

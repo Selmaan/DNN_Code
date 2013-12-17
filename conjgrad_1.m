@@ -58,7 +58,8 @@ for i = 1:maxiters
     y = y_new;
 
     
-    val = 0.5*double((-b+r)'*x);
+    %val = 0.5*double((-b+r)'*x);
+    val = gather(0.5*double((-b+r)'*x)); %modified for parallel computing toolbox
     vals( mod(i-1, maxtestgap)+1 ) = val;
     
     %disp( ['iter ' num2str(i) ': ||x|| = ' num2str(double(norm(x))) ', ||r|| = ' num2str(double(norm(r))) ', ||p|| = ' num2str(double(norm(p))) ', val = ' num2str( val ) ]);

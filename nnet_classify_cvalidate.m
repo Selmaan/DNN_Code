@@ -8,7 +8,7 @@ rand('twister', seed+1 );
 %you will NEVER need more than a few hundred epochs unless you are doing
 %something very wrong.  Here 'epoch' means parameter update, not 'pass over
 %the training set'.
-maxepoch = 100;
+maxepoch = 40;
 
 
 %CURVES
@@ -43,7 +43,7 @@ runDesc = ['seed = ' num2str(seed) 'd is reduced to PC scores with 95 of the var
 %versions with rho and cg-backtrack computed on the training set
 
 
-layersizes = [10];
+layersizes = [100];
 layertypes = {'logistic', 'logistic'};
 
 % layersizes = [150 75 40 20 2 20 40 75 150];
@@ -61,7 +61,16 @@ Win = [];
 bin = [];
 %[Win, bin] = loadPretrainedNet_curves;
 
-numchunks = 4;
+numchunks = 5;
+goodChunks = mod(length(trainBlock),numchunks);
+
+while goodChunks ~= 0
+numchunks = numchunks - 1;
+goodChunks = mod(length(trainBlock),numchunks),
+end
+
+
+
 numchunks_test = 1;
 
 mattype = 'gn'; %Gauss-Newton.  The other choices probably won't work for whatever you're doing

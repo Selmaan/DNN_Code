@@ -120,7 +120,7 @@ boost = 1/drop;
 %difference to the optimization, but does make it somewhat easier to guage
 %lambda and set its initial value since it will be 'independent' of the
 %number of training cases in each mini-batch
-initlambda = 45.0;
+initlambda = 1.0;
 
 
 if strcmp(mattype, 'hess')
@@ -141,14 +141,20 @@ if jacket
     %mzeros = @gzeros;
     %conv = @gsingle;
     
-    %GPUmat version:
-    mones = @(varargin) ones(varargin{:}, GPUsingle);
-    mzeros = @(varargin) zeros(varargin{:}, GPUsingle);
-    conv = @GPUsingle;
-    
+%     %GPUmat version:
+%     mones = @(varargin) ones(varargin{:}, GPUsingle);
+%     mzeros = @(varargin) zeros(varargin{:}, GPUsingle);
+%     conv = @GPUsingle;
+%     
+%     norm = @(x) sqrt(sum(x.*x));
+%     
+%     mrandn = @grandn;
+    %Parallel Computing Toolbox version
+    mones = @(varargin)gpuArray.ones(varargin{:}, 'single');
+    mzeros = @(varargin)gpuArray.zeros(varargin{:}, 'single');
+    conv = @(x)gpuArray(single(x));
     norm = @(x) sqrt(sum(x.*x));
-    
-    mrandn = @grandn;
+    mrandn = @gpuArray.randn;
 else
     %use singles (this can make cpu code go faster):
     
@@ -1423,14 +1429,18 @@ for epoch = epoch:maxepoch
 
     lambdarecord(epoch,1) = lambda;
 
-    llrecord(epoch,1) = ll;
-    errrecord(epoch,1) = err;
+    %llrecord(epoch,1) = ll;
+    llrecord(epoch,1) = gather(ll);
+    %errrecord(epoch,1) = err;
+    errrecord(epoch,1) = gather(err);    
     times(epoch) = toc;
     outputString( ['epoch: ' num2str(epoch) ', Log likelihood: ' num2str(ll) ', error rate: ' num2str(err) ] );
 
     [ll_test, err_test] = computeLL(paramsp, intest, outtest, numchunks_test);
-    llrecord(epoch,2) = ll_test;
-    errrecord(epoch,2) = err_test;
+    %llrecord(epoch,2) = ll_test;
+    %errrecord(epoch,2) = err_test;
+    llrecord(epoch,2) = gather(ll_test);
+    errrecord(epoch,2) = gather(err_test);
     outputString( ['TEST Log likelihood: ' num2str(ll_test) ', error rate: ' num2str(err_test) ] );
     
     outputString( ['Error rate difference (test - train): ' num2str(err_test-err)] );
