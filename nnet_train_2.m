@@ -122,7 +122,6 @@ boost = 1/drop;
 %number of training cases in each mini-batch
 initlambda = 1.0;
 
-
 if strcmp(mattype, 'hess')
     storeD = 1;
     computeBV = @computeHV;
@@ -1278,7 +1277,7 @@ for epoch = epoch:maxepoch
     %Currently I'm trying to automate"this choice, but it's quite hard
     %to come up with a *robust* heuristic for doing this.
 
-    maxiters = 125;
+    maxiters = 11;
     miniters = 1;
     outputString(['maxiters = ' num2str(maxiters) '; miniters = ' num2str(miniters)]);
 
@@ -1455,7 +1454,7 @@ for epoch = epoch:maxepoch
     tmp2 = ch;
     ch = single(ch);
     save( [runName '_nnet_running.mat'], 'paramsp', 'ch', 'epoch', 'lambda', 'totalpasses', 'llrecord', 'times', 'errrecord', 'lambdarecord' );
-    if mod(epoch,10) == 0
+    if mod(epoch,100) == 0
         save( [runName '_nnet_epoch' num2str(epoch) '.mat'], 'paramsp', 'ch', 'epoch', 'lambda', 'totalpasses', 'llrecord', 'times', 'errrecord', 'lambdarecord' );
     end
     paramsp = tmp;
